@@ -725,7 +725,7 @@ class LinearProblem:
         self,
         a: ufl.Form,
         L: ufl.Form,
-        bcs: list[DirichletBC] = [],
+        bcs: typing.Sequence[DirichletBC] | None = None,
         u: typing.Optional[_Function] = None,
         petsc_options: typing.Optional[dict] = None,
         form_compiler_options: typing.Optional[dict] = None,
@@ -738,7 +738,7 @@ class LinearProblem:
                 variational problem.
             L: A linear UFL form, the right hand side of the variational
                 problem.
-            bcs: A list of Dirichlet boundary conditions.
+            bcs: A list of Dirichlet boundary conditions (optional).
             u: The solution function. It will be created if not provided.
             petsc_options: Options that are passed to the linear
                 algebra backend PETSc. For available choices for the
@@ -777,7 +777,7 @@ class LinearProblem:
             self.u = u
 
         self._x = la.create_petsc_vector_wrap(self.u.x)
-        self.bcs = bcs
+        self.bcs = bcs or []
 
         self._solver = PETSc.KSP().create(self.u.function_space.mesh.comm)
         self._solver.setOperators(self._A)
